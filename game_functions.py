@@ -105,11 +105,14 @@ def update_bullets(ai_settings, screen, stats, sb, ship, aliens, bullets):
 def check_bullet_alien_collisions(ai_settings, screen, stats, sb, ship, aliens, bullets):
 	# Respond to bullet-alien collisions.
 	collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
+	expl_sprites = []
 
 	if collisions:
 		for aliens in collisions.values():
 			stats.score += ai_settings.alien_points * len(aliens)
 			sb.prep_score()
+		effect = pygame.mixer.Sound('/Users/Darius/Documents/python_work/alien_invasion_2/sounds/invaderkilled.wav')
+		effect.play()
 
 	if len(aliens) == 0:
 		# Destroy existing aliens and create new fleet.
@@ -123,6 +126,8 @@ def fire_bullet(ai_settings, screen, ship, bullets):
 		if len(bullets) < ai_settings.bullets_allowed: 
 			new_bullet = Bullet(ai_settings, screen, ship)
 			bullets.add(new_bullet)
+			effect = pygame.mixer.Sound('/Users/Darius/Documents/python_work/alien_invasion_2/sounds/shoot.wav')
+			effect.play()
 
 def get_number_aliens_x(ai_settings, alien_width):
 	# Determine the number of aliens that fit in a row.
@@ -172,6 +177,9 @@ def change_fleet_direction(ai_settings, aliens):
 def ship_hit(ai_settings, stats, screen, ship, aliens, bullets, bombs):
 	# Respond to ship being hit by alien.
 	# Decrement ships_left.
+	effect = pygame.mixer.Sound('/Users/Darius/Documents/python_work/alien_invasion_2/sounds/explosion.wav')
+	effect.play()
+
 	if stats.ships_left > 0:
 		# Decrement ships left.
 		stats.ships_left -= 1
@@ -209,6 +217,7 @@ def update_aliens(ai_settings, stats, screen, ship, aliens, bullets, bombs):
 	# Look for alien-ship collisions.
 	if pygame.sprite.spritecollideany(ship, aliens):
 		ship_hit(ai_settings, stats, screen, ship, aliens, bullets, bombs)
+
 	# Look for aliens hitting the bottom of the screen.
 	check_aliens_bottom(ai_settings, stats, screen, ship, aliens, bullets, bombs)
 
